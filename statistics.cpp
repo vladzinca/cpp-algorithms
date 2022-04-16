@@ -78,97 +78,123 @@ class Task {
     }
 
     int get_result() {
-        vector<string> specialWords;
-        int specialWordCount = 0;
-        int maxx = 0;
-        char searchedForLetter;
-        for (int i = 0; i < 26; i++)
+        int ourFinalResult = 0;
+        for (int k = 0; k < 26; k++)
         {
-            if (nrAparitii[i] > maxx && maximalOccurence[i] > 0.5)
-            {
-                maxx = nrAparitii[i];
-                searchedForLetter = (char)(i + 97);
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            v[i].ourLetterOccurence = (float) countTheLetters(v[i].letters, searchedForLetter) / v[i].letters.length();
-            //aici am adaugat acel 1+ si 2+
-            if (v[i].ourLetterOccurence == 0) {
-                specialWords.push_back(v[i].letters);
-                specialWordCount++;
-            }
-        }
-        sort(v.begin(), v.end(), comparator);
-        sort(specialWords.begin(), specialWords.end(), comparatorSpecial);
-        // sa scoti ultimele elemente din v cand le pui in specialWords?
-        for (int i = 0; i < specialWordCount; i++)
-            cout << specialWords[i] << "\n";
-        int maxConcatCounter = 0, foundLetters = 0, totalLettersSearched = 0;
-        foundLetters = countTheLetters(v[0].letters, searchedForLetter);
-        totalLettersSearched = v[0].letters.length();
-        float theOccurenceISeek = (float) foundLetters / totalLettersSearched;
-        if (theOccurenceISeek <= 0.5)
-            return -1;
-        else
-            maxConcatCounter++;
-        int i = 1, j = 0;
-        while (i < n && j < specialWordCount) {
-            float potentialCoeff1 = (float) (foundLetters + countTheLetters(v[i].letters, searchedForLetter)) / (totalLettersSearched + v[i].letters.length());
-            // if (i == 24)
-            //     cout << foundLetters << " se imparte la " << totalLettersSearched << "\n";
-            float potentialCoeff2 = (float) foundLetters / (totalLettersSearched + specialWords[j].length());
-            if (potentialCoeff1 <= 0.5 && potentialCoeff2 <= 0.5)
-            {
-                cout << "dam skip pentru ca avem \n";
-                break;
-            }
-            else
-            {
-                if (potentialCoeff1 > potentialCoeff2)
+            if (maximalOccurence[k] <= 0.5)
+                continue;
+            else {
+                char searchedForLetter = (char)(k + 97);
+                cout << "======================\nPentru litera " << (char) searchedForLetter << "\n=================\n";
+                vector<string> specialWords;
+                int specialWordCount = 0;
+                for (int i = 0; i < n; i++) {
+                    v[i].ourLetterOccurence = (float) countTheLetters(v[i].letters, searchedForLetter) / v[i].letters.length();
+                    //aici am adaugat acel 1+ si 2+
+                    if (v[i].ourLetterOccurence == 0) {
+                        specialWords.push_back(v[i].letters);
+                        specialWordCount++;
+                    }
+                }
+                sort(v.begin(), v.end(), comparator);
+                sort(specialWords.begin(), specialWords.end(), comparatorSpecial);
+                // sa scoti ultimele elemente din v cand le pui in specialWords?
+                // for (int i = 0; i < specialWordCount; i++)
+                //     cout << specialWords[i] << "\n";
+                int maxConcatCounter = 0, foundLetters = 0, totalLettersSearched = 0;
+                foundLetters = countTheLetters(v[0].letters, searchedForLetter);
+                totalLettersSearched = v[0].letters.length();
+                float theOccurenceISeek = (float) foundLetters / totalLettersSearched;
+                if (theOccurenceISeek <= 0.5)
                 {
-                    cout << v[i].letters << " si ourLetterOccurence este " << v[i].ourLetterOccurence << ", iar coeficientul obtinut este " << potentialCoeff1 << "\n";
-                    maxConcatCounter++;
-                    foundLetters += countTheLetters(v[i].letters, searchedForLetter);
-                    totalLettersSearched += v[i].letters.length();
-                    i++;
+                    maxConcatCounter = -1;
+                    continue;
                 }
                 else
-                {
-                    cout << specialWords[j] << " si ourLetterOccurence este, bineinteles, " << 0 << ", iar coeficientul obtinut este " << potentialCoeff2 << "\n";
                     maxConcatCounter++;
-                    totalLettersSearched += specialWords[j].length();
-                    j++;
-                    if (j == specialWordCount) // poate sa implementezi o d-asta si pentru cazul celalalt, dar nu ar trb sa fie nevoie
+                int i = 1, j = 0;
+                while (i < n - specialWordCount && j < specialWordCount) {
+                    float potentialCoeff1 = (float) (foundLetters + countTheLetters(v[i].letters, searchedForLetter)) / (totalLettersSearched + v[i].letters.length());
+                    // if (i == 24)
+                    //     cout << foundLetters << " se imparte la " << totalLettersSearched << "\n";
+                    float potentialCoeff2 = (float) foundLetters / (totalLettersSearched + specialWords[j].length());
+                    if (potentialCoeff1 <= 0.5 && potentialCoeff2 <= 0.5)
                     {
-                        while (i < n) {
-                            float potentialCoeff1 = (float) (foundLetters + countTheLetters(v[i].letters, searchedForLetter)) / (totalLettersSearched + v[i].letters.length());
-                            // if (i == 24)
-                            //     cout << foundLetters << " se imparte la " << totalLettersSearched << "\n";
-                            // float potentialCoeff2 = (float) foundLetters / (totalLettersSearched + specialWords[j].length());
-                            if (potentialCoeff1 <= 0.5)
+                        cout << "dam skip pentru ca avem \n";
+                        break;
+                    }
+                    else
+                    {
+                        if (potentialCoeff1 >= potentialCoeff2)
+                        {
+                            cout << v[i].letters << " si ourLetterOccurence este " << v[i].ourLetterOccurence << ", iar coeficientul obtinut este " << potentialCoeff1 << "\n";
+                            maxConcatCounter++;
+                            foundLetters += countTheLetters(v[i].letters, searchedForLetter);
+                            totalLettersSearched += v[i].letters.length();
+                            i++;
+                            if (i == n - specialWordCount)
                             {
-                                cout << "dam skip pentru ca avem \n";
-                                break;
+                                while (j < specialWordCount)
+                                {
+                                    float potentialCoeff = (float) foundLetters / (totalLettersSearched + specialWords[j].length());
+                                    if (potentialCoeff <= 0.5)
+                                    {
+                                        cout << "dam skip pentru ca avem \n";
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        cout << specialWords[j] << " si ourLetterOccurence este, bineinteles, " << 0 << ", iar coeficientul obtinut este " << potentialCoeff << "\n";
+                                        maxConcatCounter++;
+                                        totalLettersSearched += specialWords[j].length();
+                                        j++;
+                                    }
+                                }
                             }
-                            else
+                        }
+                        else
+                        {
+                            cout << specialWords[j] << " si ourLetterOccurence este, bineinteles, " << 0 << ", iar coeficientul obtinut este " << potentialCoeff2 << "\n";
+                            maxConcatCounter++;
+                            totalLettersSearched += specialWords[j].length();
+                            j++;
+                            if (j == specialWordCount) // poate sa implementezi o d-asta si pentru cazul celalalt, dar nu ar trb sa fie nevoie
                             {
-                                cout << v[i].letters << " si ourLetterOccurence este " << v[i].ourLetterOccurence << ", iar coeficientul obtinut este " << potentialCoeff1 << "\n";
-                                maxConcatCounter++;
-                                foundLetters += countTheLetters(v[i].letters, searchedForLetter);
-                                totalLettersSearched += v[i].letters.length();
-                                i++;
+                                while (i < n - specialWordCount) {
+                                    float potentialCoeff = (float) (foundLetters + countTheLetters(v[i].letters, searchedForLetter)) / (totalLettersSearched + v[i].letters.length());
+                                    // if (i == 24)
+                                    //     cout << foundLetters << " se imparte la " << totalLettersSearched << "\n";
+                                    // float potentialCoeff2 = (float) foundLetters / (totalLettersSearched + specialWords[j].length());
+                                    if (potentialCoeff <= 0.5)
+                                    {
+                                        cout << "dam skip pentru ca avem \n";
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        cout << v[i].letters << " si ourLetterOccurence este " << v[i].ourLetterOccurence << ", iar coeficientul obtinut este " << potentialCoeff << "\n";
+                                        maxConcatCounter++;
+                                        foundLetters += countTheLetters(v[i].letters, searchedForLetter);
+                                        totalLettersSearched += v[i].letters.length();
+                                        i++;
+                                    }
+                                }
                             }
                         }
                     }
                 }
+                cout << "Pentru litera " << searchedForLetter << " avem maxConcactCounter " << maxConcatCounter << "\n";
+                if (maxConcatCounter > ourFinalResult)
+                    ourFinalResult = maxConcatCounter;
             }
         }
-        return maxConcatCounter;
+        return ourFinalResult;
     }
 
     void print_output(int result) {
         ofstream fout("statistics.out");
         fout << result;
+        cout << result;
         fout.close();
     }
 };
