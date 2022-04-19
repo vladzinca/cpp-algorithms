@@ -6,16 +6,16 @@ build:
 	g++ -o prinel prinel.cpp
 	g++ -o crypto crypto.cpp
 
-run-p1: walsh
+run-p1:
 	./walsh
 
-run-p2: statistics
+run-p2:
 	./statistics
 
-run-p3: prinel
+run-p3:
 	./prinel
 
-run-p4: crypto
+run-p4:
 	./crypto
 
 .PHONY: clean
